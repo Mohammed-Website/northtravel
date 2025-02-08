@@ -32,25 +32,8 @@ html {
 
 
 /* Special Style */
-/* Initial state for animation */
-.mughader_animate_on_scroll {
-  transform: translateY(0px);
-  transition: all 1s ease !important;
-}
-
-/* Intro Animation */
-.intro_animation {
-  transform: translateY(0);
-}
-
-/* Outro Animation */
-.outro_animation {
-  transform: translateY(50px);
-}
-
-/* Chatbot Icon */
 #mughader_chatbot_icon {
-  z-index: 999;
+  z-index: 997;
   position: fixed;
   bottom: 40px;
   right: 0.3vmax;
@@ -77,7 +60,7 @@ html {
 
 /* Chat Sidebar */
 #mughader_chat_sidebar {
-  z-index: 1000;
+  z-index: 999;
   position: fixed;
   bottom: 0;
   right: 0;
@@ -211,8 +194,8 @@ html {
 
 
 .whatsapp_icon_div {
+  z-index: 997; /* Lower than footer */
   direction: ltr;
-  z-index: 999;
   position: fixed;
   bottom: 40px;
   left: 0.3vmax;
@@ -292,6 +275,7 @@ header.hidden {
   display: flex;
   list-style: none;
   gap: 15px;
+  align-items: center;
 }
 
 .mughader_nav_links a {
@@ -301,10 +285,23 @@ header.hidden {
   font-weight: bold;
   white-space: nowrap;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 
 .mughader_nav_links a:hover {
   color: #007bff;
+}
+
+.mughader_nav_links ion-icon {
+  background: linear-gradient(to right, #a00000, #006784);
+  color: white;
+  font-size: 1.5rem;
+  padding: 5px;
+  vertical-align: middle;
+  border-radius: 10%;
 }
 
 /* Mobile Menu Icon */
@@ -321,7 +318,8 @@ header.hidden {
   position: fixed;
   top: 0;
   right: -250px;
-  width: 250px;
+  width: 230px;
+  max-width: 100%;
   height: 100%;
   background-color: #ffffff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
@@ -335,7 +333,7 @@ header.hidden {
 }
 
 .mughader_mobile_sidebar li {
-  margin: 2rem 3px 0.5rem 0;
+  margin: 2rem 15px 0.5rem 0;
 }
 
 .mughader_mobile_sidebar a {
@@ -349,6 +347,30 @@ header.hidden {
   color: #007bff;
 }
 
+.mughader_mobile_social_icons_div {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mughader_mobile_social_icons_div li {
+  margin: 1.5rem 0px 0 0;
+}
+
+.mughader_mobile_social_icons_div a {
+  background: linear-gradient(to right, #a00000, #006784);
+  color: white;
+  font-size: 1.5rem;
+  width: 40px; /* Ensure equal width */
+  height: 40px; /* Ensure equal height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-align: center;
+}
+
+
 /* Sidebar Overlay */
 .mughader_sidebar_overlay {
   position: fixed;
@@ -357,25 +379,17 @@ header.hidden {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  /* Semi-transparent background */
   z-index: 998;
-  /* Below sidebar but above other content */
   opacity: 0;
-  /* Start fully transparent */
   visibility: hidden;
-  /* Hide from view */
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  /* Smooth transition */
 }
 
 /* Active Overlay */
 .mughader_sidebar_overlay.active {
   opacity: 1;
-  /* Fully visible */
   visibility: visible;
-  /* Make it interactable */
 }
-
 
 /* Close Icon */
 .mughader_mobile_sidebar .mughader_close_icon {
@@ -388,10 +402,7 @@ header.hidden {
   transition: color 0.3s ease;
 }
 
-.mughader_mobile_sidebar .mughader_close_icon:hover {
-  color: #ff4d4d;
-  /* Highlighted color on hover */
-}
+
 
 
 
@@ -408,16 +419,64 @@ header.hidden {
 /* Section Styling */
 .wow_effect_section {
   position: relative;
-  height: 45vh;
   width: 100%;
-  background-image: linear-gradient(120deg, #1e3c72, #2a5298);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
+  height: 45vh;
   overflow: hidden;
+  background: linear-gradient(270deg, #000428, #004e92, #000428);
+  background-size: 400% 400%;
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: backgroundMove 10s infinite alternate ease-in-out;
+}
+
+/* Background Moving Animation */
+@keyframes backgroundMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Floating Elements */
+.floating_element {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6); /* Glowing effect */
+  animation: floatAnimation linear infinite, fadeInOut 1s infinite alternate;
+  filter: blur(2px);
+}
+
+/* Floating Animation (more dynamic) */
+@keyframes floatAnimation {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-15px, -25px); }
+  50% { transform: translate(20px, -10px); }
+  75% { transform: translate(-10px, 15px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Opacity Animation */
+@keyframes fadeInOut {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}
+
+/* Glass Effect for Text Box */
+.wow_glass_box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+  animation: pulseGlow 5s infinite alternate ease-in-out;
+}
+
+/* Glowing Effect */
+@keyframes pulseGlow {
+  0% { box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2); }
+  100% { box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5); }
 }
 
 /* Overlay */
@@ -443,18 +502,6 @@ header.hidden {
   position: relative;
   display: flex;
   justify-content: center;
-}
-
-/* Glass Box Effect */
-.wow_glass_box {
-  width: 70vw;
-  backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.15);
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  overflow: hidden;
 }
 
 /* Title Styling */
@@ -568,9 +615,8 @@ header.hidden {
   background-color: #f8f9fa;
 }
 
-/* Title Styling */
+/* Title Styling with Animated Background */
 .scrollable_section_title {
-  background: linear-gradient(90deg, #457b9d, #1d3557);
   font-size: 2rem;
   font-weight: bold;
   text-align: right;
@@ -580,7 +626,19 @@ header.hidden {
   padding: 10px 5px 10px 0;
   border-top-right-radius: 7px;
   border-top-left-radius: 7px;
+  
+  /* Extended Gradient for Seamless Loop */
+  background: linear-gradient(90deg, #457b9d, #1d3557, #457b9d, #1d3557);
+  background-size: 400% 100%;
+  animation: moveGradientSeamless 5s linear infinite;
 }
+
+/* Keyframes for Seamless Background Movement */
+@keyframes moveGradientSeamless {
+  0% { background-position: 100% 0; }  /* Start from right */
+  100% { background-position: 0% 0; }  /* Move to left smoothly */
+}
+
 
 /* Scrollable Row */
 .scrollable_cards_row {
@@ -762,6 +820,19 @@ header.hidden {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Scrollable Images Container */
 .scrollable_images_container {
   display: flex;
@@ -799,12 +870,6 @@ header.hidden {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
   scroll-snap-align: center;
 }
-
-
-
-
-
-
 
 
 
@@ -913,14 +978,36 @@ header.hidden {
 
 
 
-/* Customers Comments */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Customers omments Section */
 .mughader_customers_comments_section {
   background: #f9f9f9;
   padding-top: 0.5vmax;
 }
 
 .mughader_customers_comments_section h6 {
-  font-size: 2rem;
+  font-size:1.5rem;
   font-weight: bold;
   color: #2c3e50;
   text-align: center;
@@ -944,83 +1031,211 @@ header.hidden {
   border-radius: 2px;
 }
 
+#indoforall_clint_rate_section {
+  display: flex;
+  overflow: hidden;
+  border-radius: 3px;
+}
 
-#mughader_customers_comments_section_id {
+#indoforall_clint_rate_area {
   background: #dadada;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 0;
   display: flex;
   overflow-x: auto;
-  gap: 16px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: hidden;
+  box-shadow: 0 0 1px 0.5px black;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
 }
 
-#mughader_customers_comments_section_id::-webkit-scrollbar {
-  height: 10px;
+#indoforall_clint_rate_area.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-#mughader_customers_comments_section_id::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 5px;
-}
-
-#mughader_customers_comments_section_id::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
-}
-
-.mughader_comment_card {
+.indoforall_rate_div {
+  background: rgb(46, 46, 46);
+  color: white;
+  min-width: 35rem;
+  margin: 0 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 40vmax;
-  background-color: white;
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  justify-content: space-between;
+  border-radius: 3px;
+  box-shadow: 0 0 3px 0.5px rgb(0, 162, 255);
+  transition: all 0.5s ease-in-out;
   scroll-snap-align: center;
 }
 
-.mughader_comment_card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+.indoforall_rate_div:hover {
+  box-shadow: 0 0 3px 0.5px rgb(0, 255, 0);
 }
 
-.mughader_profile_picture {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+.indoforall_clint_rate_date_div {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+}
+
+.indoforall_clint_rate_date_div h3 {
+  font-size: 1rem;
+  font-weight: 200;
+}
+
+.indoforall_clint_rate_info_div {
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 10px;
 }
 
-.mughader_person_name {
-  font-size: 16px;
-  font-weight: bold;
+.indoforall_clint_rate_info_div img {
+  width: 3.5rem;
+  border-radius: 50%;
+}
+
+.indoforall_clint_rate_info_div h4 {
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.indoforall_clint_rate_comment_div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.indoforall_clint_rate_comment_div h5 {
+  font-size: 1.3rem;
+  font-weight: 300;
+  margin-top: 10px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.indoforall_clint_rate_star_div {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 2rem;
+  color: gold;
+}
+
+/* Hide vertical scrollbar */
+#indoforall_clint_rate_area::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Styling the main container */
+.indoforall_insert_comment_form_div {
+  width: 55vw;
+  margin: 10px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Styling the heading */
+.indoforall_insert_comment_form_div h3 {
+  font-size: 1.5rem;
   color: #333;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 
-.mughader_comment_text {
-  direction: rtl;
+/* Form styling */
+#indoforall_comment_form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px 0;
+}
+
+/* Label styling */
+#indoforall_comment_form label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000000;
+  text-align: right;
+}
+
+/* Input and textarea styling */
+#indoforall_comment_username,
+#indoforall_comment_text,
+#indoforall_comment_stars {
+  width: 100%;
+  padding: 10px 0;
+  border: 1px solid #000000;
+  border-radius: 5px;
   font-size: 14px;
-  color: #555;
-  margin-bottom: 10px;
 }
 
-.mughader_stars {
-  color: #f1c40f;
-  font-size: 20px;
+/* Textarea specific styling */
+#indoforall_comment_text {
+  min-height: 80px;
+  resize: vertical;
 }
 
+/* Select dropdown styling */
+#indoforall_comment_stars {
+  cursor: pointer;
+  background-color: #fff;
+}
 
+/* Submit button styling */
+#indoforall_comment_form button {
+  background: linear-gradient(to top, rgb(0, 52, 82), rgb(0, 127, 200));
+  color: white;
+  font-size: 1rem;
+  padding: 5px 0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#indoforall_success_notification {
+  position: fixed;
+  top: 50%;
+  /* Start from the middle of the screen vertically */
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  /* Start from the center */
+  background-color: #4CAF50;
+  /* Green background */
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+/* Show animation */
+#indoforall_success_notification.show {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+  /* Move up to center smoothly */
+}
 
 
 
@@ -1045,6 +1260,8 @@ footer {
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
+  z-index: 998; /* Higher than the WhatsApp and Chatbot icons */
+  position: relative; /* Ensures z-index takes effect */
 }
 
 footer img {
@@ -1059,6 +1276,28 @@ footer * {
 
 
 
+
+
+
+
+
+
+
+/* Media Queries */
+/* 1250px */
+@media(max-width:1250px) {
+
+  /* Styling the main container */
+  .indoforall_insert_comment_form_div {
+    width: 80vw;
+  }
+
+  /* Form styling */
+  #indoforall_comment_form {
+    gap: 5px 0;
+  }
+
+}
 
 
 
@@ -1165,6 +1404,48 @@ footer * {
 
 
 
+
+
+
+  .indoforall_rate_div {
+    min-width: 65vw;
+    margin: 0 8px;
+    padding: 5px 2px;
+  }
+
+  .indoforall_clint_rate_date_div h3 {
+    font-size: 2.5vw;
+  }
+
+  .indoforall_clint_rate_info_div img {
+    width: 5.5vw;
+  }
+
+  .indoforall_clint_rate_info_div h4 {
+    font-size: 2.5vw;
+  }
+
+  .indoforall_clint_rate_comment_div h5 {
+    font-size: 2.5vw;
+  }
+
+  .indoforall_clint_rate_star_div {
+    margin-top: 8px;
+    font-size: 3.5vw;
+  }
+
+  .indoforall_insert_comment_form_div h3 {
+    font-size: 4vw;
+  }
+
+
+
+
+
+
+
+
+
   /* WhatsApp Code */
   .whatsapp_icon_div {
     font-size: 2.8vw;
@@ -1187,6 +1468,7 @@ footer * {
   #mughader_chatbot_icon {
     width: 8vmax;
   }
+
 }
 
 
@@ -1373,7 +1655,7 @@ footer * {
 
   /* Logo */
   .mughader_header_logo {
-    width: 3.5rem;
+    width: 4.5rem;
   }
 
 
@@ -1458,10 +1740,59 @@ footer * {
 
 
 
-  /* Customers Comments Section */
-  .mughader_comment_card {
-    min-width: 33vmax;
+
+
+
+
+
+  .mughader_customers_comments_section h6 {
+    font-size: 5.5vw;
   }
+
+  .indoforall_rate_div {
+    min-width: 90vw;
+    margin: 0 5px;
+  }
+
+  .indoforall_clint_rate_date_div h3 {
+    font-size: 3.5vw;
+  }
+
+  .indoforall_clint_rate_info_div img {
+    width: 8.5vw;
+  }
+
+  .indoforall_clint_rate_info_div h4 {
+    font-size: 3.5vw;
+  }
+
+  .indoforall_clint_rate_comment_div h5 {
+    font-size: 3.5vw;
+  }
+
+  .indoforall_clint_rate_star_div {
+    margin-top: 8px;
+    font-size: 5vw;
+  }
+
+  .indoforall_insert_comment_form_div {
+    width: 100vw;
+    padding: 5px 10px;
+  }
+
+  .indoforall_insert_comment_form_div h3 {
+    font-size: 5vw;
+    margin-bottom: 5px;
+  }
+
+  #indoforall_comment_form label {
+    font-size: 4vw;
+  }
+
+  #indoforall_comment_form button {
+    font-size: 4vw;
+  }
+
 
 
 

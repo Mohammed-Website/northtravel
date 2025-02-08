@@ -26,96 +26,341 @@ function closeSidebar() {
 
 
 
+const section = document.querySelector(".wow_effect_section");
+
+function createFloatingElement() {
+    const element = document.createElement("div");
+    element.classList.add("floating_element");
+
+    // Random position
+    const posX = Math.random() * window.innerWidth;
+    const posY = Math.random() * window.innerHeight;
+
+    // Random size (more variation)
+    const size = Math.random() * 80 + 30; // Min 30px, Max 110px
+    element.style.width = `${size}px`;
+    element.style.height = `${size}px`;
+
+    // Random animation duration (slower movement)
+    const duration = Math.random() * 6 + 4; // 4s to 10s
+    element.style.animationDuration = `${duration}s`;
+
+    // Random blur for depth effect
+    const blurValue = Math.random() * 3 + 1;
+    element.style.filter = `blur(${blurValue}px)`;
+
+    // Random opacity for some circles to be more visible
+    element.style.opacity = Math.random() * 0.6 + 0.4; // Between 0.4 and 1
+
+    element.style.left = `${posX}px`;
+    element.style.top = `${posY}px`;
+
+    section.appendChild(element);
+
+    // Remove after animation ends
+    setTimeout(() => {
+        element.remove();
+    }, duration * 1000);
+}
+
+// Generate floating elements continuously
+setInterval(createFloatingElement, 800);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const words = [
+    "رحلات سياحية",
+    "جورجيا",
+    "اذربيجان",
+    "اندونيسيا",
+    "ماليزيا",
+    "تايلاند",
+    "عروض سياحية",
+];
+
+let currentIndex = 1;
+const dynamicWordElement = document.getElementById("mughader_dynamic_word_switch");
+const lineTimerElement = document.getElementById("mughader_line_timer");
+
+// Ensure the initial word is visible
+dynamicWordElement.classList.add("visible");
+
+function updateTimerWidth() {
+    const wordWidth = dynamicWordElement.offsetWidth; // Get the width of the current word
+    const scaledWidth = wordWidth * 1; // Adjust width to 40% of the word's width (smaller)
+    lineTimerElement.style.width = `${scaledWidth}px`; // Set timer line width
+    lineTimerElement.style.margin = "0 auto"; // Center the timer under the text
+}
+
+function resetTimer() {
+    lineTimerElement.style.transition = "none"; // Disable transition to reset instantly
+    lineTimerElement.style.width = "0"; // Reset width to 0
+    setTimeout(() => {
+        lineTimerElement.style.transition = "width 1.8s linear"; // Reapply transition
+        lineTimerElement.style.width = `${dynamicWordElement.offsetWidth * 1}px`; // Start animation
+    }, 50); // Small delay to ensure transition is reapplied
+}
+
+function changeWord() {
+    // Fade out by removing 'visible' class
+    dynamicWordElement.classList.remove("visible");
+
+    setTimeout(() => {
+        // Change word
+        dynamicWordElement.innerText = words[currentIndex];
+        currentIndex = (currentIndex + 1) % words.length;
+
+        // Fade in by adding 'visible' class
+        dynamicWordElement.classList.add("visible");
+
+        // Update timer width
+        updateTimerWidth();
+    }, 300); // Match CSS fade duration
+
+    // Reset and start the timer line animation
+    resetTimer();
+}
+
+// Start the loop
+setInterval(changeWord, 1800); // Match the timer line animation duration
+
+// Adjust the timer width for the initial word
+updateTimerWidth();
+resetTimer(); // Start timer animation for the first word
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let chatbotIcon = document.getElementById("mughader_chatbot_icon");
+let chatSidebar = document.getElementById("mughader_chat_sidebar");
+let closeChat = document.getElementById("mughader_close_chat");
+let sendBtn = document.getElementById("mughader_send_btn");
+let messageBar = document.getElementById("mughader_message_bar");
+let messageBox = document.querySelector(".mughader_message_box");
+let chatOverlay = document.getElementById("mughader_chat_overlay");
+
+let API_URL = "https://api.openai.com/v1/chat/completions";
+let API_KEY = "sk-***76cA";
+
+/* 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 */
+
+// Check if the user is on a mobile device
+const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+
+// Open Slider if ai bot icon is clicked
+chatbotIcon.addEventListener("click", () => {
+    chatSidebar.classList.add("active");
+    chatOverlay.classList.add("active");
+});
+
+// Close Sidebar if close slider button is clicked
+closeChat.addEventListener("click", () => {
+    chatSidebar.classList.remove("active");
+    chatOverlay.classList.remove("active");
+});
+
+// Close Sidebar if Overlay is Clicked
+chatOverlay.addEventListener("click", () => {
+    chatSidebar.classList.remove("active");
+    chatOverlay.classList.remove("active");
+});
+
+// Send Message Function
+sendBtn.onclick = function () {
+    if (messageBar.value.trim() !== "") {
+        let UserTypedMessage = messageBar.value.trim();
+        messageBar.value = "";
+
+        let userMessage = `
+                <div class="chat message">
+                    <span>${UserTypedMessage}</span>
+                </div>
+            `;
+
+        let botResponse = `
+                <div class="chat response">
+                    <img src="مكتب-سياحي/مكتب-سياحي-بحريني.webp">
+                    <span class="new">...</span>
+                </div>
+            `;
+
+        messageBox.insertAdjacentHTML("beforeend", userMessage);
+
+        setTimeout(() => {
+            messageBox.insertAdjacentHTML("beforeend", botResponse);
+
+            let requestOptions = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{ role: "user", content: UserTypedMessage }]
+                })
+            };
+
+            fetch(API_URL, requestOptions)
+                .then((res) => res.json())
+                .then((data) => {
+                    let ChatBotResponse = document.querySelector(".response .new");
+                    ChatBotResponse.innerHTML = data.choices[0].message.content;
+                    ChatBotResponse.classList.remove("new");
+                })
+                .catch(() => {
+                    let ChatBotResponse = document.querySelector(".response .new");
+                    ChatBotResponse.innerHTML = "الموقع مازال في وضع التجربة";
+                });
+        }, 100);
+
+
+
+        document.getElementById("mughader_message_bar").style.height = "40px"; // Reset to default height;
+    }
+};
+
+// Attach Send Message Function to Enter Key (for Desktop)
+if (!isMobileDevice) {
+    messageBar.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // Prevent default behavior
+            sendBtn.click();
+        } else if (event.key === "Enter" && event.shiftKey) {
+            event.preventDefault(); // Allow Shift+Enter to insert a new line
+            const cursorPosition = messageBar.selectionStart;
+            messageBar.value =
+                messageBar.value.substring(0, cursorPosition) + "\n" + messageBar.value.substring(cursorPosition);
+            messageBar.selectionStart = messageBar.selectionEnd = cursorPosition + 1; // Move cursor to the new line
+            messageBar.style.height = "auto"; // Reset height to auto
+            messageBar.style.height = `${messageBar.scrollHeight}px`; // Adjust height based on content
+        }
+    });
+}
+
+// Enable Enter for New Line Only (for Mobile)
+if (isMobileDevice) {
+    messageBar.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevent sending the message
+            const cursorPosition = messageBar.selectionStart;
+            messageBar.value =
+                messageBar.value.substring(0, cursorPosition) + "\n" + messageBar.value.substring(cursorPosition);
+            messageBar.selectionStart = messageBar.selectionEnd = cursorPosition + 1; // Move cursor to the new line
+            messageBar.style.height = "auto"; // Reset height to auto
+            messageBar.style.height = `${messageBar.scrollHeight}px`; // Adjust height based on content
+        }
+    });
+}
+
+// Adjust Textarea Height Dynamically
+messageBar.addEventListener("input", function () {
+    this.style.height = "auto"; // Reset height to auto
+    this.style.height = `${this.scrollHeight}px`; // Set height based on scroll height
+});
+
+// Handle Dynamic Text Direction
+document.querySelectorAll('.mughader_dynamic_direction_input_class').forEach(input => {
+    input.addEventListener('input', function () {
+        let firstChar = this.value.trim().charAt(0);
+
+        if (firstChar) {
+            // Check if the first character is Arabic
+            if (firstChar.match(/[\u0600-\u06FF]/)) {
+                this.style.direction = 'rtl';
+            } else {
+                this.style.direction = 'ltr';
+            }
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+messageBar.addEventListener("input", function () {
+    this.style.height = "auto"; // Reset height to auto
+    this.style.height = `${this.scrollHeight}px`; // Set height based on scroll height
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+scrollToWhoAreWe = function (elementIdName) {
+    const targetDiv = document.getElementById(elementIdName);
+    if (targetDiv) {
+        const targetPosition = targetDiv.getBoundingClientRect().top + window.scrollY;
+        const windowHeight = window.innerHeight;
+        const scrollToPosition = targetPosition - (windowHeight / 2) + (targetDiv.clientHeight / 2);
+
+        window.scrollTo({
+            top: scrollToPosition,
+            behavior: "smooth"
+        });
+    }
+
+}
+
 
 /* Header show or hide based on scrolling */
 const header = document.getElementById('mughader_header');
 let lastScrollPosition = 0;
 
 window.addEventListener('scroll', () => {
-  const currentScrollPosition = window.scrollY;
+    const currentScrollPosition = window.scrollY;
 
-  if (currentScrollPosition > lastScrollPosition) {
-    // Scrolling down
-    header.classList.add('hidden');
-  } else {
-    // Scrolling up
-    header.classList.remove('hidden');
-  }
-
-  lastScrollPosition = currentScrollPosition;
-});
-
-
-
-
-
-
-
-
-
-/* Switching words functionality */
-document.addEventListener("DOMContentLoaded", function () {
-    const words = [
-        "عروض سياحية",
-        "طرابزون",
-        "موسكو",
-        "اسطنبول",
-        "كازخستان",
-        "اذربيجان",
-        "عروض سياحية",
-        "لجميع الميزانيات",
-        "رحلات سياحية",
-    ];
-
-    let currentIndex = 1;
-    const dynamicWordElement = document.getElementById("mughader_dynamic_word_switch");
-    const lineTimerElement = document.getElementById("mughader_line_timer");
-
-    // Ensure the initial word is visible
-    dynamicWordElement.classList.add("visible");
-
-    function updateTimerWidth() {
-        const wordWidth = dynamicWordElement.offsetWidth; // Get the width of the current word
-        const scaledWidth = wordWidth * 1; // Adjust width to 40% of the word's width (smaller)
-        lineTimerElement.style.width = `${scaledWidth}px`; // Set timer line width
-        lineTimerElement.style.margin = "0 auto"; // Center the timer under the text
+    if (currentScrollPosition > lastScrollPosition) {
+        // Scrolling down
+        header.classList.add('hidden');
+    } else {
+        // Scrolling up
+        header.classList.remove('hidden');
     }
 
-    function resetTimer() {
-        lineTimerElement.style.transition = "none"; // Disable transition to reset instantly
-        lineTimerElement.style.width = "0"; // Reset width to 0
-        setTimeout(() => {
-            lineTimerElement.style.transition = "width 1.8s linear"; // Reapply transition
-            lineTimerElement.style.width = `${dynamicWordElement.offsetWidth * 1}px`; // Start animation
-        }, 50); // Small delay to ensure transition is reapplied
-    }
-
-    function changeWord() {
-        // Fade out by removing 'visible' class
-        dynamicWordElement.classList.remove("visible");
-
-        setTimeout(() => {
-            // Change word
-            dynamicWordElement.innerText = words[currentIndex];
-            currentIndex = (currentIndex + 1) % words.length;
-
-            // Fade in by adding 'visible' class
-            dynamicWordElement.classList.add("visible");
-
-            // Update timer width
-            updateTimerWidth();
-        }, 300); // Match CSS fade duration
-
-        // Reset and start the timer line animation
-        resetTimer();
-    }
-
-    // Start the loop
-    setInterval(changeWord, 1800); // Match the timer line animation duration
-
-    // Adjust the timer width for the initial word
-    updateTimerWidth();
-    resetTimer(); // Start timer animation for the first word
+    lastScrollPosition = currentScrollPosition;
 });
 
 
@@ -136,35 +381,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-/* Function for all elements when scrolling */
-document.addEventListener("DOMContentLoaded", () => {
-    const animatedElements = document.querySelectorAll(".mughader_animate_on_scroll");
-
-    const observerOptions = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1
-    };
-
-    const observerCallback = (entries) => {
-        entries.forEach(entry => {
-            // Check if the element is intersecting and hasn't been animated before
-            if (entry.isIntersecting && !entry.target.classList.contains("animation_done")) {
-                entry.target.classList.add("intro_animation", "animation_done");
-                entry.target.classList.remove("outro_animation");
-            } else if (!entry.isIntersecting && !entry.target.classList.contains("animation_done")) {
-                entry.target.classList.remove("intro_animation");
-                entry.target.classList.add("outro_animation");
-            }
-        });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    animatedElements.forEach(element => {
-        observer.observe(element);
-    });
-});
 
 
 
@@ -172,163 +388,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-/* Ai bot chat functionality */
-document.addEventListener("DOMContentLoaded", () => {
-    let chatbotIcon = document.getElementById("mughader_chatbot_icon");
-    let chatSidebar = document.getElementById("mughader_chat_sidebar");
-    let closeChat = document.getElementById("mughader_close_chat");
-    let sendBtn = document.getElementById("mughader_send_btn");
-    let messageBar = document.getElementById("mughader_message_bar");
-    let messageBox = document.querySelector(".mughader_message_box");
-    let chatOverlay = document.getElementById("mughader_chat_overlay");
-
-    let API_URL = "https://api.openai.com/v1/chat/completions";
-    let API_KEY = "sk-***76cA";
-
-    /* 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 */
-
-    // Check if the user is on a mobile device
-    const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
-
-    // Open Slider if ai bot icon is clicked
-    chatbotIcon.addEventListener("click", () => {
-        chatSidebar.classList.add("active");
-        chatOverlay.classList.add("active");
-    });
-
-    // Close Sidebar if close slider button is clicked
-    closeChat.addEventListener("click", () => {
-        chatSidebar.classList.remove("active");
-        chatOverlay.classList.remove("active");
-    });
-
-    // Close Sidebar if Overlay is Clicked
-    chatOverlay.addEventListener("click", () => {
-        chatSidebar.classList.remove("active");
-        chatOverlay.classList.remove("active");
-    });
-
-    // Send Message Function
-    sendBtn.onclick = function () {
-        if (messageBar.value.trim() !== "") {
-            let UserTypedMessage = messageBar.value.trim();
-            messageBar.value = "";
-
-            let userMessage = `
-                <div class="chat message">
-                    <span>${UserTypedMessage}</span>
-                </div>
-            `;
-
-            let botResponse = `
-                <div class="chat response">
-                    <img src="https://mohammed-website.github.io/northtravel/%D9%85%D9%83%D8%AA%D8%A8-%D8%B3%D9%8A%D8%A7%D8%AD%D9%8A/%D9%85%D9%83%D8%AA%D8%A8-%D8%B3%D9%8A%D8%A7%D8%AD%D9%8A-%D8%A8%D8%AD%D8%B1%D9%8A%D9%86%D9%8A.png">
-                    <span class="new">...</span>
-                </div>
-            `;
-
-            messageBox.insertAdjacentHTML("beforeend", userMessage);
-
-            setTimeout(() => {
-                messageBox.insertAdjacentHTML("beforeend", botResponse);
-
-                let requestOptions = {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-3.5-turbo",
-                        messages: [{ role: "user", content: UserTypedMessage }]
-                    })
-                };
-
-                fetch(API_URL, requestOptions)
-                    .then((res) => res.json())
-                    .then((data) => {
-                        let ChatBotResponse = document.querySelector(".response .new");
-                        ChatBotResponse.innerHTML = data.choices[0].message.content;
-                        ChatBotResponse.classList.remove("new");
-                    })
-                    .catch(() => {
-                        let ChatBotResponse = document.querySelector(".response .new");
-                        ChatBotResponse.innerHTML = "الموقع مازال في وضع التجربة";
-                    });
-            }, 100);
-
-
-
-            document.getElementById("mughader_message_bar").style.height = "40px"; // Reset to default height;
-        }
-    };
-
-    // Attach Send Message Function to Enter Key (for Desktop)
-    if (!isMobileDevice) {
-        messageBar.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault(); // Prevent default behavior
-                sendBtn.click();
-            } else if (event.key === "Enter" && event.shiftKey) {
-                event.preventDefault(); // Allow Shift+Enter to insert a new line
-                const cursorPosition = messageBar.selectionStart;
-                messageBar.value =
-                    messageBar.value.substring(0, cursorPosition) + "\n" + messageBar.value.substring(cursorPosition);
-                messageBar.selectionStart = messageBar.selectionEnd = cursorPosition + 1; // Move cursor to the new line
-                messageBar.style.height = "auto"; // Reset height to auto
-                messageBar.style.height = `${messageBar.scrollHeight}px`; // Adjust height based on content
-            }
-        });
-    }
-
-    // Enable Enter for New Line Only (for Mobile)
-    if (isMobileDevice) {
-        messageBar.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                event.preventDefault(); // Prevent sending the message
-                const cursorPosition = messageBar.selectionStart;
-                messageBar.value =
-                    messageBar.value.substring(0, cursorPosition) + "\n" + messageBar.value.substring(cursorPosition);
-                messageBar.selectionStart = messageBar.selectionEnd = cursorPosition + 1; // Move cursor to the new line
-                messageBar.style.height = "auto"; // Reset height to auto
-                messageBar.style.height = `${messageBar.scrollHeight}px`; // Adjust height based on content
-            }
-        });
-    }
-
-    // Adjust Textarea Height Dynamically
-    messageBar.addEventListener("input", function () {
-        this.style.height = "auto"; // Reset height to auto
-        this.style.height = `${this.scrollHeight}px`; // Set height based on scroll height
-    });
-
-    // Handle Dynamic Text Direction
-    document.querySelectorAll('.mughader_dynamic_direction_input_class').forEach(input => {
-        input.addEventListener('input', function () {
-            let firstChar = this.value.trim().charAt(0);
-
-            if (firstChar) {
-                // Check if the first character is Arabic
-                if (firstChar.match(/[\u0600-\u06FF]/)) {
-                    this.style.direction = 'rtl';
-                } else {
-                    this.style.direction = 'ltr';
-                }
-            }
-        });
-    });
-});
-
-/* Auto resize textarea element */
-document.addEventListener("DOMContentLoaded", function () {
-    const messageBar = document.getElementById("mughader_message_bar");
-
-    messageBar.addEventListener("input", function () {
-        this.style.height = "auto"; // Reset height to auto
-        this.style.height = `${this.scrollHeight}px`; // Set height based on scroll height
-    });
-});
 
 
 
@@ -469,8 +528,6 @@ const sectionData = [
     },
 ];
 
-
-
 // Function to dynamically create the section
 function createScrollableCardsSection(dataArray) {
     const section = document.getElementById("scrollable_cards_section_id");
@@ -560,7 +617,7 @@ function openFullScreenImage(mainSrc, subImages, text) {
     const whatsappButton = document.createElement('a');
     whatsappButton.className = 'whatsapp_button';
     whatsappButton.innerText = 'إرسال هذا العرض';
-    whatsappButton.href = `https://wa.me/+97332122188?text=طلب%20حجز%20هذا%20العرض:%0A%0Ahttps://mohammed-website.github.io/northtravel/${encodeURIComponent(mainSrc)}`;
+    whatsappButton.href = `https://wa.me/+97338811136?text=طلب%20حجز%20هذا%20العرض:%0A%0Ahttps://mohammed-website.github.io/sikkatravel/${encodeURIComponent(mainSrc)}`;
     fullScreenDiv.appendChild(whatsappButton);
 
     // Close on background click
@@ -603,156 +660,117 @@ createScrollableCardsSection(sectionData);
 
 
 
-/* Create Comments Section */
-let mughader_commentsArray = [
-    {
-        profileImage: "https://mughader.com/مكتب-للسفر-والسياحة/مكتب-للسفر-والسياحة-1.png",
-        personName: "م.ثامر الغنيمي",
-        comment: "شكراً لكم على خدمتكم الجميلة وتعاملكم الاحترافي وبرامجكم المرنة.. 👍🏻",
-        stars: 5
-    },
-    {
-        profileLetter: "H",
-        personName: "Hh Oo",
-        comment: "شركة محترمة وصادقة ومرضية للعميل وتقدم خدمات مميزة واسعار مناسبة وخدمات مختلفة.",
-        stars: 5
-    },
-    {
-        profileLetter: "E",
-        personName: "Emanoo Emee",
-        comment: "والله الخدمه جدا رائعه و موفره جميع سبل الراحه و الرفاهيه من خدمة حجوزات الفنادق و السائق الخاص خلال الرحله و تنظيم جداول يوميه للرحلات و توفير خدمة مترجم و المطاعم و جميع الاماكن السياحيه عمل جدا عظيم و جبار و السعر كان جدا مناسب شكرا جزيلا 🙏🏻🌹.",
-        stars: 5
-    },
-    {
-        profileLetter: "D",
-        personName: "Dal8800 دال للعقارات",
-        comment: "شكرا شركة الشمال على اتقانكم  بالعمل وعلى خدمتكم الجميله بارك الله فيكم وفي جهودكم الى الاعلى بإذن",
-        stars: 5
-    },
-    {
-        profileImage: "https://mughader.com/مكتب-للسفر-والسياحة/مكتب-للسفر-والسياحة-3.png",
-        personName: "ناصر الهزاع",
-        comment: "اشكر طاقم شركة الشمال على تعاملهم معي يستاهلو كل خير ♥️♥️",
-        stars: 5
-    },
-    {
-        profileLetter: "F",
-        personName: "Fahad Fahad",
-        comment: "خدمه خمس نجوم فعلياً من الاستقبال الى التوديع شكراً لاتفي حقكم ❤️",
-        stars: 5
-    },
-    {
-        profileLetter: "ح",
-        personName: "حامد العنزي",
-        comment: "من أرقى الشركات تعامل وصدق ودقة ويهمهم راحت السائح بأدق التفاصيل وعلى تواصل مباشر مع السائح يوميا حتى العودة",
-        stars: 5
-    },
-    {
-        profileImage: "https://mughader.com/مكتب-للسفر-والسياحة/مكتب-للسفر-والسياحة-2.png",
-        personName: "FAISAL ALHAMED",
-        comment: "من افضل وكالات السفر التي تتميز بتقديم خدمات فريدة من نوعها لا يمكن ان تجدها في غيرها من الوكالات",
-        stars: 5
-    },
-    {
-        profileLetter: "ن",
-        personName: "ناصر الموسى",
-        comment: "نشكر شركة الشمال على جهوده وتمنى له دائم التوفيق و والــــنــــجـــــاح",
-        stars: 5
-    },
-    {
-        profileLetter: "H",
-        personName: "Hala Abdullah",
-        comment: "من افضل واحسن الي تعاملت معهم للامانة ولا غلطة والاسعار حلوه جدا ومعقولة مرا شككككرا  شركة الشمال للسياحة 💛🙏🏻",
-        stars: 5
-    },
-    {
-        profileLetter: "س",
-        personName: "سامي الموسى",
-        comment: "صراحه مجهود يشكر عليه من شركة الشمال للسفر والسياحة ومن افضل الشركات الي حريصه علئ ادق التفاصيل شركه تلبي جميع احتيجاتك وعن تجربه اتكلم صراحه تعاملهم جدا راقي بجميع الاماكن والاوقات ❤️❤️",
-        stars: 5
-    },
-];
 
-// Array of vibrant colors
-let mughader_profileColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFC300", "#33FFF2"];
 
-function mughader_generateComments(comments) {
-    let commentsSection = document.getElementById("mughader_customers_comments_section_id");
 
-    comments.forEach(({ profileLetter, profileImage, personName, comment, stars }, index) => {
-        // Create the main comment card
-        let commentCard = document.createElement("div");
-        commentCard.className = "mughader_comment_card";
 
-        // Create the profile picture element
-        let profilePicture = document.createElement("div");
-        profilePicture.className = "mughader_profile_picture";
 
-        if (profileImage) {
-            // Use an image if profileImage is provided
-            let img = document.createElement("img");
-            img.src = profileImage;
-            img.alt = `مكتب سياحي - شركة الشمال`;
-            img.title = `مكتب سياحي - شركة الشمال`;
-            profilePicture.appendChild(img);
-        } else if (profileLetter) {
-            // Use the profile letter if no image is provided
-            profilePicture.textContent = profileLetter;
 
-            // Assign a vibrant color to the profile picture
-            let colorIndex = index % mughader_profileColors.length; // Cycle through the colors
-            profilePicture.style.backgroundColor = mughader_profileColors[colorIndex];
+
+
+
+
+/* Function for import all comments from google sheet */
+document.getElementById("indoforall_comment_form").addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent page refresh
+
+    let name = document.getElementById("indoforall_comment_username").value.trim();
+    let comment = document.getElementById("indoforall_comment_text").value.trim();
+    let stars = document.getElementById("indoforall_comment_stars").value;
+
+
+    let formData = new URLSearchParams();
+    formData.append("name", name); // Match Google Apps Script keys
+    formData.append("comment", comment);
+    formData.append("stars", stars);
+
+    try {
+        let response = await fetch("https://script.google.com/macros/s/AKfycbyBAJQhhVA5Uhxe2rrEZ4rjB0Ttn4SrYBptwjx47VZlxtgi3dENPfmNyAmrfL-QZpdEnQ/exec", {
+            method: "POST",
+            body: formData,
+        });
+
+        let data = await response.text();
+
+        if (data === "Success") {
+            document.getElementById("indoforall_comment_form").reset();
+
+            await fetchReviews(); // Wait until fetchReviews() is fully executed
+
+            showSuccessNotification(); // Now run the notification function
         }
+    } catch (error) {
+    }
+});
 
-        // Create the person's name
-        let personNameElement = document.createElement("div");
-        personNameElement.className = "mughader_person_name";
-        personNameElement.textContent = personName;
+// Function to Fetch and Display Reviews
+function fetchReviews() {
+    fetch("https://script.google.com/macros/s/AKfycbyBAJQhhVA5Uhxe2rrEZ4rjB0Ttn4SrYBptwjx47VZlxtgi3dENPfmNyAmrfL-QZpdEnQ/exec")
+        .then(response => response.json())
+        .then(data => {
+            let indoforall_clint_rate_area = document.getElementById("indoforall_clint_rate_area");
+            indoforall_clint_rate_area.innerHTML = ""; // Clear old reviews
 
-        // Create the comment text
-        let commentText = document.createElement("div");
-        commentText.className = "mughader_comment_text";
-        commentText.textContent = comment;
+            data.reverse().forEach(item => { // Reverse to show newest first
+                let { date, name, comment, starAmount } = item;
 
-        // Create the stars
-        let starsElement = document.createElement("div");
-        starsElement.className = "mughader_stars";
-        starsElement.textContent = "★".repeat(stars);
+                // Skip any row where the comment is empty
+                if (!comment.trim()) return;
 
-        // Append all elements to the comment card
-        commentCard.appendChild(profilePicture);
-        commentCard.appendChild(personNameElement);
-        commentCard.appendChild(commentText);
-        commentCard.appendChild(starsElement);
+                let clintRateDiv = document.createElement("div");
+                clintRateDiv.classList.add("indoforall_rate_div");
 
-        // Append the comment card to the section
-        commentsSection.appendChild(commentCard);
-    });
+                clintRateDiv.innerHTML = `
+                <div class="indoforall_clint_rate_date_div indoforall_animate_on_scroll">
+                    <h3 class="indoforall_animate_on_scroll">${date}</h3>
+                </div>
+
+                <div class="indoforall_clint_rate_info_div indoforall_animate_on_scroll">
+                    <img src="مكتب-سياحي/مكتب-سياحي-بحريني.webp" alt="سهم للسفر والسياحة - مكتب سياحي" title="سهم للسفر والسياحة - مكتب سياحي">
+                    <h4>${name}</h4>
+                </div>
+
+                <div class="indoforall_clint_rate_comment_div">
+                    <h5>${comment}</h5>
+                </div>
+
+                <div class="indoforall_clint_rate_star_div">
+                    ${"★".repeat(starAmount)}
+                </div>
+            `;
+
+                indoforall_clint_rate_area.appendChild(clintRateDiv);
+            });
+
+            // Smooth appearance with delay
+            setTimeout(() => {
+                indoforall_clint_rate_area.classList.add("show");
+            }, 100);
+        })
+        .catch(error => console.error("Error fetching reviews:", error));
 }
 
-// Call the function to populate comments
-mughader_generateComments(mughader_commentsArray);
+// Function to Show Floating Success Notification
+function showSuccessNotification() {
+    let notification = document.getElementById("indoforall_success_notification");
+    notification.style.display = "block";
 
+    setTimeout(() => {
+        notification.style.opacity = "1";
+        notification.style.transform = "translateX(-50%) translateY(0px)"; // Move slightly up
+    }, 10);
 
+    setTimeout(() => {
+        notification.style.opacity = "0";
+        notification.style.transform = "translateX(-50%) translateY(10px)"; // Move down slightly while fading out
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 400);
+    }, 3000);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Fetch Reviews on Page Load
+fetchReviews();
 
 
 
@@ -810,46 +828,3 @@ openWhatsAppNumber = function () {
     const url = `https://wa.me/${whatsappNumber}?text=${message}`;
     window.open(url, "_blank"); // Opens in a new tab
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

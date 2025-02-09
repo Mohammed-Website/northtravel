@@ -617,7 +617,7 @@ function openFullScreenImage(mainSrc, subImages, text) {
     const whatsappButton = document.createElement('a');
     whatsappButton.className = 'whatsapp_button';
     whatsappButton.innerText = 'إرسال هذا العرض';
-    whatsappButton.href = `https://wa.me/+97338811136?text=طلب%20حجز%20هذا%20العرض:%0A%0Ahttps://mohammed-website.github.io/sikkatravel/${encodeURIComponent(mainSrc)}`;
+    whatsappButton.href = `https://wa.me/+97317900988?text=طلب%20حجز%20هذا%20العرض:%0A%0Ahttps://mohammed-website.github.io/sikkatravel/${encodeURIComponent(mainSrc)}`;
     fullScreenDiv.appendChild(whatsappButton);
 
     // Close on background click
@@ -823,7 +823,7 @@ openWhatsAppNumber = function () {
 
     insertNewClick('alseef.com');
 
-    const whatsappNumber = "+97332122188";
+    const whatsappNumber = "+97317900988";
     const message = encodeURIComponent('سلام عليكم ورحمة الله وبركاته'); // Optional pre-filled message
     const url = `https://wa.me/${whatsappNumber}?text=${message}`;
     window.open(url, "_blank"); // Opens in a new tab

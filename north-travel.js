@@ -26,120 +26,126 @@ function closeSidebar() {
 
 
 
-const section = document.querySelector(".wow_effect_section");
+/* First Section Background Design */
+const canvas = document.getElementById("neon_canvas");
+const ctx = canvas.getContext("2d");
 
-function createFloatingElement() {
-    const element = document.createElement("div");
-    element.classList.add("floating_element");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    // Random position
-    const posX = Math.random() * window.innerWidth;
-    const posY = Math.random() * window.innerHeight;
+const stars = [];
+const lanterns = [];
+const starCount = 80;
+const lanternCount = 4;
 
-    // Random size (more variation)
-    const size = Math.random() * 80 + 30; // Min 30px, Max 110px
-    element.style.width = `${size}px`;
-    element.style.height = `${size}px`;
-
-    // Random animation duration (slower movement)
-    const duration = Math.random() * 6 + 4; // 4s to 10s
-    element.style.animationDuration = `${duration}s`;
-
-    // Random blur for depth effect
-    const blurValue = Math.random() * 3 + 1;
-    element.style.filter = `blur(${blurValue}px)`;
-
-    // Random opacity for some circles to be more visible
-    element.style.opacity = Math.random() * 0.6 + 0.4; // Between 0.4 and 1
-
-    element.style.left = `${posX}px`;
-    element.style.top = `${posY}px`;
-
-    section.appendChild(element);
-
-    // Remove after animation ends
-    setTimeout(() => {
-        element.remove();
-    }, duration * 1000);
+function createStars() {
+    for (let i = 0; i < starCount; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 1,
+            opacity: Math.random() * 0.5 + 0.5,
+            speed: Math.random() * 0.2 + 0.1
+        });
+    }
 }
 
-// Generate floating elements continuously
-setInterval(createFloatingElement, 800);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const words = [
-    "رحلات سياحية",
-    "جورجيا",
-    "اذربيجان",
-    "اندونيسيا",
-    "ماليزيا",
-    "تايلاند",
-    "عروض سياحية",
-];
-
-let currentIndex = 1;
-const dynamicWordElement = document.getElementById("mughader_dynamic_word_switch");
-const lineTimerElement = document.getElementById("mughader_line_timer");
-
-// Ensure the initial word is visible
-dynamicWordElement.classList.add("visible");
-
-function updateTimerWidth() {
-    const wordWidth = dynamicWordElement.offsetWidth; // Get the width of the current word
-    const scaledWidth = wordWidth * 1; // Adjust width to 40% of the word's width (smaller)
-    lineTimerElement.style.width = `${scaledWidth}px`; // Set timer line width
-    lineTimerElement.style.margin = "0 auto"; // Center the timer under the text
+function createLanterns() {
+    for (let i = 0; i < lanternCount; i++) {
+        lanterns.push({
+            baseX: (canvas.width / (lanternCount + 1)) * (i + 1),
+            y: canvas.height * 0.85,
+            swingRange: Math.random() * 5 + 5, // Increase sway range
+            angle: Math.random() * Math.PI
+        });
+    }
 }
 
-function resetTimer() {
-    lineTimerElement.style.transition = "none"; // Disable transition to reset instantly
-    lineTimerElement.style.width = "0"; // Reset width to 0
-    setTimeout(() => {
-        lineTimerElement.style.transition = "width 1.8s linear"; // Reapply transition
-        lineTimerElement.style.width = `${dynamicWordElement.offsetWidth * 1}px`; // Start animation
-    }, 50); // Small delay to ensure transition is reapplied
+let time = 0;
+
+function drawCrescentMoon() {
+    const baseX = canvas.width - 150;
+    const moonY = 85;
+    const outerRadius = 50;
+    const innerRadius = 45;
+
+    // Stronger swaying movement
+    const swayX = Math.sin(time * 0.5) * 5; // Move left-right
+    const rotationAngle = Math.sin(time * 0.5) * 0.1; // Faster rocking effect
+
+    ctx.save(); // Save current state
+    ctx.translate(baseX + swayX, moonY); // Move to the moon's center
+    ctx.rotate(rotationAngle); // Apply faster rotation
+
+    ctx.fillStyle = "#FFD700";
+    ctx.shadowColor = "#FFD700";
+
+    ctx.beginPath();
+    ctx.arc(0, 0, outerRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.globalCompositeOperation = "destination-out";
+
+    ctx.beginPath();
+    ctx.arc(20, -10, innerRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.restore(); // Restore original state
 }
 
-function changeWord() {
-    // Fade out by removing 'visible' class
-    dynamicWordElement.classList.remove("visible");
+function drawStars() {
+    stars.forEach((star) => {
+        ctx.globalAlpha = star.opacity;
+        ctx.fillStyle = "#FFD700";
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#FFD700";
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
 
-    setTimeout(() => {
-        // Change word
-        dynamicWordElement.innerText = words[currentIndex];
-        currentIndex = (currentIndex + 1) % words.length;
-
-        // Fade in by adding 'visible' class
-        dynamicWordElement.classList.add("visible");
-
-        // Update timer width
-        updateTimerWidth();
-    }, 300); // Match CSS fade duration
-
-    // Reset and start the timer line animation
-    resetTimer();
+        star.opacity += star.speed * (Math.random() > 0.5 ? 1 : -1);
+        if (star.opacity < 0.3) star.opacity = 0.3;
+        if (star.opacity > 1) star.opacity = 1;
+    });
 }
 
-// Start the loop
-setInterval(changeWord, 1800); // Match the timer line animation duration
+function drawLanterns() {
+    lanterns.forEach((lantern, index) => {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#FFA500";
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#FFA500";
 
-// Adjust the timer width for the initial word
-updateTimerWidth();
-resetTimer(); // Start timer animation for the first word
+        // Stronger swinging movement
+        let swayX = lantern.baseX + Math.sin(time * 0.6 + index) * lantern.swingRange;
+
+        ctx.beginPath();
+        ctx.rect(swayX - 10, lantern.y, 20, 40);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(swayX, lantern.y + 40, 10, 0, Math.PI * 2);
+        ctx.fill();
+    });
+}
+
+function animateCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawCrescentMoon();
+    drawStars();
+    drawLanterns();
+
+    time += 0.05; // Adjust speed
+
+    requestAnimationFrame(animateCanvas);
+}
+
+createStars();
+createLanterns();
+animateCanvas();
 
 
 
@@ -341,7 +347,20 @@ scrollToWhoAreWe = function (elementIdName) {
             behavior: "smooth"
         });
     }
+}
 
+function scrollToMiddleOfElement(className) {
+    const element = document.querySelector(`.${className}`);
+    if (element) {
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.scrollY;
+        const middlePosition = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+
+        window.scrollTo({
+            top: middlePosition,
+            behavior: 'smooth'
+        });
+    }
 }
 
 
@@ -398,135 +417,47 @@ window.addEventListener('scroll', () => {
 
 
 
-
-
-
-
-
-
-
-
 // create all offers content functionality
 const sectionData = [
+    {
+        title: 'أحدث العروض',
+        image_1: ['عروض-شركة-الشمال/احدث-العروض/1.jpg', 'رحلة عيد الفطر | طرابزون 8 أيام'],
+        image_2: ['عروض-شركة-الشمال/احدث-العروض/2.jpg', 'رحلة عيد الفطر | اسطنبول 7 أيام'],
+        image_3: ['عروض-شركة-الشمال/احدث-العروض/3.jpg', 'رحلة البوسنة & الهرسك | 9 أيام'],
+        image_4: ['عروض-شركة-الشمال/احدث-العروض/4.jpg', 'رحلة امستردام & اسطنبول | 8 أيام'],
+        image_5: ['عروض-شركة-الشمال/احدث-العروض/5.jpg', 'رحلة لندن & اسطنبول | 8 أيام'],
+    },
 
     {
         title: 'عروض طرابزون',
-        main_image_1: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1-تفاصيل-4.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-1/عرض-طرابزون-1-تفاصيل-5.jpg',
-            ],
-            text: 'عرض طرابزون - 8 أيام',
-        },
-
-        main_image_2: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2-تفاصيل-4.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-2/عرض-طرابزون-2-تفاصيل-5.jpg',
-            ],
-            text: 'عرض طرابزون & باتومي - 8 أيام',
-        },
-
-        main_image_3: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3-تفاصيل-4.jpg',
-                'عروض-شركة-الشمال/عروض-طرابزون-3/عرض-طرابزون-3-تفاصيل-5.jpg',
-            ],
-            text: 'عرض طرابزون & ريزا - 8 أيام',
-        },
+        image_1: ['عروض-شركة-الشمال/طرابزون/1.jpg', 'رحلة اجازة الربيع | طرابزون 8 أيام'],
+        image_2: ['عروض-شركة-الشمال/طرابزون/2.jpg', 'رحلة طرابزون & باتومي - 8 أيام'],
+        image_3: ['عروض-شركة-الشمال/طرابزون/3.jpg', 'رحلة طرابزون & ريزا - 8 أيام'],
     },
 
     {
         title: 'عروض موسكو',
-        main_image_1: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-موسكو-1/عرض-موسكو-1.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-موسكو-1/عرض-موسكو-1-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-1/عرض-موسكو-1-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-1/عرض-موسكو-1-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-1/عرض-موسكو-1-تفاصيل-4.jpg',
-            ],
-            text: 'عرض موسكو - 8 أيام',
-        },
-
-        main_image_2: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2-تفاصيل-4.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-2/عرض-موسكو-2-تفاصيل-5.jpg',
-            ],
-            text: 'عرض موسكو - 8 أيام',
-        },
-
-        main_image_3: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-موسكو-3/عرض-موسكو-3.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-موسكو-3/عرض-موسكو-3-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-3/عرض-موسكو-3-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-3/عرض-موسكو-3-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-موسكو-3/عرض-موسكو-3-تفاصيل-4.jpg',
-            ],
-            text: 'عرض موسكو - 8 أيام',
-        },
+        image_1: ['عروض-شركة-الشمال/موسكو/1.jpg', 'رحلة اجازة الربيع | موسكو 8 أيام'],
+        image_2: ['عروض-شركة-الشمال/موسكو/2.jpg', 'رحلة اعياد البحرين | موسكو 8 أيام'],
+        image_3: ['عروض-شركة-الشمال/موسكو/3.jpg', 'رحلة الخريف | موسكو 8 أيام'],
     },
 
     {
         title: 'عروض اسطنبول',
-        main_image_1: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-اسطنبول-1/عرض-اسطنبول-1.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-اسطنبول-1/عرض-اسطنبول-1-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-اسطنبول-1/عرض-اسطنبول-1-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-اسطنبول-1/عرض-اسطنبول-1-تفاصيل-3.jpg',
-            ],
-            text: 'عرض اسطنبول & لندن - 8 أيام',
-        },
+        image_1: ['عروض-شركة-الشمال/اسطنبول/1.jpg', 'رحلة اسطنبول & لندن | 8 أيام'],
     },
 
     {
         title: 'عروض كازخستان',
-        main_image_1: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-كازخستان-1/عرض-كازخستان-1.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-كازخستان-1/عرض-كازخستان-1-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-كازخستان-1/عرض-كازخستان-1-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-كازخستان-1/عرض-كازخستان-1-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-كازخستان-1/عرض-كازخستان-1-تفاصيل-4.jpg',
-            ],
-            text: 'عرض كازخستان - 9 أيام',
-        },
+        image_1: ['عروض-شركة-الشمال/كازخستان/1.jpg', 'رحلة اجازة الربيع | كازخستان 9 أيام'],
     },
 
     {
         title: 'عروض اذربيجان',
-        main_image_1: {
-            mainSrc: 'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1.jpg',
-            subImages: [
-                'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1-تفاصيل-1.jpg',
-                'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1-تفاصيل-2.jpg',
-                'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1-تفاصيل-3.jpg',
-                'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1-تفاصيل-4.jpg',
-                'عروض-شركة-الشمال/عروض-اذربيجان-1/عرض-اذربيجان-1-تفاصيل-5.jpg',
-            ],
-            text: 'عرض اذربيجان - 7 أيام',
-        },
+        image_1: ['عروض-شركة-الشمال/اذربيجان/1.jpg', 'رحلة الشتاء | اذربيجان 7 أيام'],
     },
 ];
+
 
 // Function to dynamically create the section
 function createScrollableCardsSection(dataArray) {
@@ -548,16 +479,16 @@ function createScrollableCardsSection(dataArray) {
 
         // Loop through the images and create cards
         Object.keys(data).forEach((key) => {
-            if (key.startsWith('main_image')) {
-                const { mainSrc, subImages, text } = data[key];
+            if (key.startsWith('image_')) {
+                const [src, text] = data[key];
 
                 const card = document.createElement('div');
                 card.className = 'scrollable_card';
 
                 const img = document.createElement('img');
-                img.src = mainSrc; // Display the main image as the thumbnail
+                img.src = src;
                 img.alt = text;
-                img.addEventListener('click', () => openFullScreenImage(mainSrc, subImages, text)); // Pass mainSrc and subImages
+                img.addEventListener('click', () => openFullScreenImage(src, text)); // Pass text to full-screen function
                 card.appendChild(img);
 
                 scrollableRow.appendChild(card);
@@ -569,55 +500,41 @@ function createScrollableCardsSection(dataArray) {
     });
 }
 
-function openFullScreenImage(mainSrc, subImages, text) {
+function openFullScreenImage(src, text) {
+
     // Disable document scrolling
     document.body.style.overflow = 'hidden';
 
-    // Create the full-screen container div
+
+    /* Create the sull screen container div */
     const fullScreenDiv = document.createElement('div');
     fullScreenDiv.className = 'full_screen_container';
 
     // Add animation class for fade-in effect
     setTimeout(() => fullScreenDiv.classList.add('visible'), 10);
 
-    // Create the exit button
     const exitButton = document.createElement('button');
     exitButton.innerText = 'عودة';
     exitButton.className = 'exit_button';
     exitButton.addEventListener('click', closeFullScreenImage);
     fullScreenDiv.appendChild(exitButton);
 
-    // Create the title
     const title = document.createElement('h2');
     title.innerText = text;
     title.className = 'full_screen_title';
     fullScreenDiv.appendChild(title);
 
-    // Create the scrollable images container
-    const imagesContainer = document.createElement('div');
-    imagesContainer.className = 'scrollable_images_container';
+    // Full-screen image
+    const fullScreenImage = document.createElement('img');
+    fullScreenImage.src = src;
+    fullScreenImage.className = 'full_screen_image';
+    fullScreenDiv.appendChild(fullScreenImage);
 
-    // Add mainSrc as the first image
-    const mainImage = document.createElement('img');
-    mainImage.src = mainSrc;
-    mainImage.className = 'scrollable_image';
-    imagesContainer.appendChild(mainImage);
-
-    // Add subImages
-    subImages.forEach((subSrc) => {
-        const subImg = document.createElement('img');
-        subImg.src = subSrc;
-        subImg.className = 'scrollable_image';
-        imagesContainer.appendChild(subImg);
-    });
-
-    fullScreenDiv.appendChild(imagesContainer);
-
-    // Create the WhatsApp button
+    // WhatsApp button
     const whatsappButton = document.createElement('a');
     whatsappButton.className = 'whatsapp_button';
     whatsappButton.innerText = 'إرسال هذا العرض';
-    whatsappButton.href = `https://wa.me/+97317900988?text=طلب%20حجز%20هذا%20العرض:%0A%0Ahttps://mohammed-website.github.io/sikkatravel/${encodeURIComponent(mainSrc)}`;
+    whatsappButton.href = `https://wa.me/+97317900988?text=💎%20طلب%20حجز%20عرض%20جديد%20💎%0A%0Aسلام%20عليكم،%20حاب%20أسأل%20عن%20عرض%0A*${encodeURIComponent(text)}*%0Aوحاب%20أعرف%20تفاصيل%20أكثر%20عن%20عروضكم%20المشابهة.%0A%0A🔗%20رابط%20صورة%20العرض:%0Ahttps://mohammed-website.github.io/wegzztravel/${encodeURIComponent(src)}%0A%0Aبإنتظار%20ردكم%20وشكرًا%20لكم`;
     fullScreenDiv.appendChild(whatsappButton);
 
     // Close on background click
@@ -629,12 +546,19 @@ function openFullScreenImage(mainSrc, subImages, text) {
 
     // Smooth close function
     function closeFullScreenImage() {
-        fullScreenDiv.classList.remove('visible'); // Trigger fade-out
-        setTimeout(() => fullScreenDiv.remove(), 300); // Remove element after fade-out
-        document.body.style.overflow = ''; // Re-enable document scrolling
+        const fullScreenDiv = document.querySelector('.full_screen_container');
+        if (!fullScreenDiv) return;
+
+
+        fullScreenDiv.style.opacity = '0';
+
+
+        setTimeout(() => {
+            fullScreenDiv.remove();
+            document.body.style.overflow = '';
+        }, 500);
     }
 }
-
 
 // Call the function with the sample data
 createScrollableCardsSection(sectionData);
